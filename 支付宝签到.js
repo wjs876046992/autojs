@@ -4,6 +4,7 @@ let Robot = require("./lib/Robot.js");
 let WidgetAutomator = require("./lib/WidgetAutomator.js");
 let robot = new Robot();
 let widget = new WidgetAutomator(robot);
+console.show()
 
 // 启动APP
 widget.launchLikeName("支付宝", 5000);
@@ -19,7 +20,9 @@ widget.clickCenterText("我的");
 sleep(2000);
 
 // 进入支付宝会员
-widget.clickCenterClass("android.view.ViewGroup");
+const w = className("android.view.ViewGroup").findOnce()
+const rect = w.bounds();
+click(rect.centerX(), rect.height() / 3 / 2 + rect.top)
 sleep(8000);
 
 // 请求截图并点击开始
@@ -35,22 +38,21 @@ if (!requestScreenCapture(false)) {
 sleep(500);
 
 // 使用OCR识别文字
+images.requestScreenCapture();
 let img = images.captureScreen();
-let img2 = images.clip(img, 0, 0, 1080, 1200);
-toastLog("OCR开始");
-let list = paddle.ocr(img2);
-toastLog("OCR结束");
-img = null;
-img2 = null;
-images = null;
-paddle = null;
+// let img2 = images.clip(img, 0, 0, 1080, 1200);
+console.log("OCR开始");
+let list = ocr.detect(img);
+console.log(list)
+console.log("OCR结束");
+img.recycle();
 let sign = [];
 let get_all = [];
 for (let obj of list) {
-    if (obj.text.indexOf("每日签到") !== -1) {
+    if (obj.label.indexOf("每日签到") !== -1) {
         sign = [obj.bounds.left, obj.bounds.top];
     }
-    if (obj.text.indexOf("全部领取") !== -1) {
+    if (obj.label.indexOf("全部领取") !== -1) {
         get_all = [obj.bounds.left, obj.bounds.top];
     }
 }
@@ -63,6 +65,8 @@ if (sign.length > 0) {
     robot.click(sign[0], sign[1]);
     toastLog("签到成功");
     sleep(3000);
+} else {
+    toastLog("签到失败");
 }
 
 // =====================控件查找start=====================

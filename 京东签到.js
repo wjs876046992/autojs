@@ -6,7 +6,7 @@ let robot = new Robot();
 let widget = new WidgetAutomator(robot);
 
 // 启动APP
-widget.launchLikeName("京东", 8000);
+widget.launchLikeName("京东", 3000);
 
 // 切换到我的
 widget.clickCenterDesc("我的");
@@ -29,8 +29,8 @@ if (textContains("已连签").exists()) {
 } else {
     widget.clickCenterTextContains("签到领京豆");
     toastLog("签到成功");
-    sleep(1500);
 }
+sleep(1500);
 
 // 关闭应用
 robot.close();
